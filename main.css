@@ -47,3 +47,7 @@ html {
 .num-area-active {
     background-color: #3f3f3f;
 }
+
+.clickable {
+    cursor: pointer;
+}
