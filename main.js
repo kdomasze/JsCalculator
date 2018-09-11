@@ -1,20 +1,22 @@
 $(document).ready(() => {
+
+    // blinking cursor for output
+    setInterval(() => {
+        $('.output').toggleClass('blinking-cursor');
+    }, 500);
+
     // button effects for numbers
-    $('.num-area').on('mouseover', event => {
+    $('.num-area').hover(event => {
         if (!($(event.currentTarget).hasClass('empty'))) {
-            $(event.currentTarget).addClass('num-area-active');
+            $(event.currentTarget).toggleClass('num-area-active');
         }
-    }).on('mouseleave', event => {
-        $(event.currentTarget).removeClass('num-area-active');
     });
 
     // button effects for operators
-    $('.operator-area').on('mouseover', event => {
+    $('.operator-area').hover(event => {
         if (!($(event.currentTarget).hasClass('empty'))) {
-            $(event.currentTarget).addClass('operator-area-active');
+            $(event.currentTarget).toggleClass('operator-area-active');
         }
-    }).on('mouseleave', event => {
-        $(event.currentTarget).removeClass('operator-area-active');
     });
 
     // button logic

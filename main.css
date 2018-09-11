@@ -25,9 +25,15 @@ html {
     align-items: center;
 }
 
-.calculator .output {
+.output {
     text-align: right;
     font-size: 2.5rem;
+    margin-bottom: 10px;
+    border-right: 1.35px solid white;
+}
+
+.blinking-cursor {
+    border-right: 1.35px solid #4286f4;
 }
 
 .operator-area {
@@ -51,3 +57,13 @@ html {
 .clickable {
     cursor: pointer;
 }
+
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome and Opera */
+  }
