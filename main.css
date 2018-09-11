@@ -1,0 +1,52 @@
+html {
+    font-family: 'Roboto', 'Courier New', Courier, monospace;
+    font-size: 44px;
+    color: black;
+}
+
+body {
+}
+
+.calculator {
+    width: 475px;
+    margin: 0 auto;
+}
+
+.buttons {
+    display: grid;
+    justify-items: stretch;
+    align-items: stretch;
+    justify-content: center;
+
+    grid-template-columns: repeat(5, 95px);
+    grid-template-rows: repeat(4, 95px);
+}
+
+.button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.calculator .output {
+    text-align: right;
+    font-size: 1.8rem;
+}
+
+.operator-area {
+    background-color: #7a7a7a;
+    color: white;
+}
+
+.operator-area-active {
+    background-color: #828282;
+}
+
+.num-area {
+    background-color: #333333;
+    color: white;
+}
+
+.num-area-active {
+    background-color: #3f3f3f;
+}
