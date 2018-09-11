@@ -4,6 +4,8 @@ $(document).ready(() => {
         index: 0
     };
 
+    const $output = $('.output');
+
     // blinking cursor for output
     setInterval(() => {
         $('.output').toggleClass('blinking-cursor');
@@ -29,15 +31,15 @@ $(document).ready(() => {
             let buttonText = $(event.currentTarget).text();
 
             if (buttonText === '÷' || buttonText === '×' || buttonText === '-' || buttonText === '+') {
-                addOperator(entry, buttonText, $('.output'));
+                addOperator(entry, buttonText, $output);
             } else if (buttonText === '.') {
-                addDecimal(entry, $('.output'));
+                addDecimal(entry, $output);
             } else if (buttonText === 'DEL') {
-                deleteEntry(entry, $('.output'));
+                deleteEntry(entry, $output);
             } else if (buttonText === '=') {
-                // equals logic here
+                calculateResult(entry, $output);
             } else {
-                addNumber(entry, buttonText, $('.output'));
+                addNumber(entry, buttonText, $output);
             }
         }
     });
@@ -91,3 +93,42 @@ const addNumber = (entry, buttonText, output) => {
     entry.text[entry.index] += buttonText;
     output.text(entry.text.join(''));
 }
+
+const calculateResult = (entry, output) => {
+    let result = 0;
+    let lastOperator = '+';
+    for (let i in entry.text) {
+        if (isNumeric(entry.text[i])) {
+            result = _handleOperator(lastOperator, Number(entry.text[i]), result);
+        } else {
+            lastOperator = entry.text[i];
+        }
+    }
+
+    entry.text = ['' + result];
+    entry.index = 0;
+    output.text(entry.text.join(''));
+};
+
+const _handleOperator = (operator, num, result) => {
+    switch (operator) {
+    case '+':
+        result += num;
+        break;
+    case '-':
+        result -= num;
+        break;
+    case '×':
+        result *= num;
+        break;
+    case '÷':
+        result /= num;
+        break;
+    }
+
+    return result;
+};
+
+const isNumeric = (num) => {
+    return !isNaN(num);
+};
