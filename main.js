@@ -1,7 +1,6 @@
 $(document).ready(() => {
     const entry = {
-        text: [''],
-        index: 0
+        text: ''
     };
 
     const $output = $('.output');
@@ -46,63 +45,46 @@ $(document).ready(() => {
 });
 
 const deleteEntry = (entry, output) => {
-    if (entry.index === 0 && entry.text[entry.index].length === 0) {
+    if (entry.text.length === 0) {
         return;
     }
 
-    // end of entry after operator case
-    if (entry.text[entry.index].length === 0) {
-        entry.text.pop();
-        entry.index--;
-    }
-
     // delete character
-    entry.text[entry.index] = entry.text[entry.index].substring(0, entry.text[entry.index].length - 1);
+    entry.text = entry.text.substring(0, entry.text.length - 1);
 
     // deleting results in empty output case
-    if (entry.index === 0 && entry.text[entry.index].length === 0) {
+    if (entry.text.length === 0) {
         output.text('0');
         return;
     }
 
     // display output
-    output.text(entry.text.join(''));
+    output.text(entry.text);
 };
 
 const addOperator = (entry, buttonText, output) => {
-    entry.index++;
-    entry.text[entry.index] = buttonText;
-    entry.index++;
-    entry.text[entry.index] = '';
-    output.text(entry.text.join(''));
+    entry.text += buttonText;
+    output.text(entry.text);
 };
 
 const addDecimal = (entry, output) => {
-    if (!entry.text[entry.index].includes('.')) {
-        entry.text[entry.index] += '.';
+    let tempSplit = entry.split(/[+-÷×]/);
+    if (!tempSplit[tempSplit.length - 1].includes('.')) {
+        entry.text += '.';
     }
-    output.text(entry.text.join(''));
+    output.text(entry.text);
 };
 
 const addNumber = (entry, buttonText, output) => {
-    if (entry.length === 0) {
-        entry.text.push('');
-        entry.index = 0;
-    }
-
-    entry.text[entry.index] += buttonText;
-    output.text(entry.text.join(''));
+    entry.text += buttonText;
+    output.text(entry.text);
 };
 
 const calculateResult = (entry, output) => {
+    let result = _parseExpression(entry.text);
 
-    let joinedExpression = entry.text.join('');
-
-    let result = _parseExpression(joinedExpression);
-
-    entry.text = ['' + result];
-    entry.index = 0;
-    output.text(entry.text.join(''));
+    entry.text = '' + result;
+    output.text(entry.text);
 };
 
 const _seperateOutHighOrderOperations = (expression) => {
@@ -153,7 +135,7 @@ const _calculateLowerOrderExpression = (higherOrderExpression) => {
             for (let j = 1; j < splitOperation.length; j++) {
                 tempResult = _handleOperator(operator, splitOperation[j], tempResult);
             }
-            lowerOrderExpression.push(tempResult);
+            lowerOrderExpression.push('' + tempResult);
         }
     }
 
@@ -180,7 +162,7 @@ const _parseExpression = (joinedExpression) => {
     let lowerOrderExpression = _calculateLowerOrderExpression(higherOrderExpression);
     let result = _calculateResult(lowerOrderExpression);
     return result;
-}
+};
 
 const _handleOperator = (operator, num, result) => {
     switch (operator) {
