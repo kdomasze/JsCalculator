@@ -15,8 +15,16 @@ html {
     align-items: stretch;
     justify-content: center;
 
-    grid-template-columns: repeat(5, 95px);
-    grid-template-rows: repeat(4, 95px);
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+}
+
+.buttons > .button::before {
+    content: '';
+    display: inline-block;
+    width: 1px;
+    height: 0;
+    padding-bottom: calc(100%);
 }
 
 .button {
@@ -29,6 +37,7 @@ html {
     text-align: right;
     font-size: 2.5rem;
     margin-bottom: 10px;
+    margin-right: 2px;
     border-right: 1.35px solid white;
 }
 
@@ -60,15 +69,28 @@ html {
 
 .noselect {
     -webkit-touch-callout: none; /* iOS Safari */
-      -webkit-user-select: none; /* Safari */
-       -khtml-user-select: none; /* Konqueror HTML */
-         -moz-user-select: none; /* Firefox */
-          -ms-user-select: none; /* Internet Explorer/Edge */
-              user-select: none; /* Non-prefixed version, currently
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
                                     supported by Chrome and Opera */
-  }
+}
 
 footer {
     font-size: 0.45rem;
     text-align: center;
+}
+
+@media only screen and (max-width: 500px) {
+    body {
+        position: fixed;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .calculator {
+        width: inherit;
+    }
 }
