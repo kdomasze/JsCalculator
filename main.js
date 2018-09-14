@@ -1,5 +1,16 @@
-const isNumeric = (num) => !Number.isNaN(num) && !Number.isNaN(parseFloat(num));
+/**
+ * Checks if a string is a valid numeric representation
+ * @param {string} num the string representation to check if it is a number
+ */
+const _isNumeric = (num) => !Number.isNaN(num) && !Number.isNaN(parseFloat(num));
 
+/**
+ * Seperates out the high order operations (multiplication and division) into their
+ * own index in an array. This allows their result to be parsed seperately from the
+ * lower order operations (subtraction and addition) in order to obay order of
+ * operations.
+ * @param {string} expression The string containing the current calculator string
+ */
 const _seperateOutHighOrderOperations = (expression) => {
     const calculation = [];
     let temp = '';
@@ -21,6 +32,12 @@ const _seperateOutHighOrderOperations = (expression) => {
     return calculation;
 };
 
+/**
+ * Performs and returns the result of the operation (result (operator) num). I.E. (result + num).
+ * @param {string} operator The string representation of the operator to be applied
+ * @param {number} num The number to be applied to the result
+ * @param {number} result The current result that will have the num applied to it
+ */
 const _handleOperator = (operator, num, result) => {
     let newResult = result;
 
@@ -42,8 +59,11 @@ const _handleOperator = (operator, num, result) => {
     return newResult;
 };
 
-// this function will calculate all the multiplication and division expression and return
-// an array of numbers and operators (bound to '+' and '-')
+/**
+ * Calculates all the multiplication and division expression and return
+ * an array of numbers and operators (bound to '+' and '-')
+ * @param {Array<string>} higherOrderExpression The output of _seperateOutHighOrderOperations
+ */
 const _calculateLowerOrderExpression = (higherOrderExpression) => {
     const lowerOrderExpression = [];
 
@@ -76,11 +96,15 @@ const _calculateLowerOrderExpression = (higherOrderExpression) => {
     return lowerOrderExpression;
 };
 
+/**
+ * Calculates all the addition and subtraction expressions and returns the final result
+ * @param {Array<any>} lowerOrderExpression The output of _calculateLowerOrderExpression
+ */
 const _calculateResult = (lowerOrderExpression) => {
     let result = 0;
     let lastOperator = '+';
     for (let i = 0; i < lowerOrderExpression.length; i++) {
-        if (isNumeric(lowerOrderExpression[i])) {
+        if (_isNumeric(lowerOrderExpression[i])) {
             result = _handleOperator(lastOperator, Number(lowerOrderExpression[i]), result);
         } else {
             lastOperator = lowerOrderExpression[i];
@@ -90,14 +114,38 @@ const _calculateResult = (lowerOrderExpression) => {
     return result;
 };
 
-const _parseExpression = (joinedExpression) => {
-    const higherOrderExpression = _seperateOutHighOrderOperations(joinedExpression);
+/**
+ * Parses the calculation of the current calculator string and returns the result
+ * @param {string} entry The string containing the current calculator string
+ */
+const _parseExpression = (entry) => {
+    const higherOrderExpression = _seperateOutHighOrderOperations(entry);
     const lowerOrderExpression = _calculateLowerOrderExpression(higherOrderExpression);
     const result = _calculateResult(lowerOrderExpression);
     return result;
 };
 
-const deleteEntry = (entry, output) => {
+/**
+ * Checks if the passed in character is a valid operator
+ * @param {string} character Character to check
+ */
+const isOperator = (character) =>
+    character === '÷' || character === '×' || character === '-' || character === '+';
+
+/**
+ * Checks if the passed in string ends with a valid operator
+ * @param {string} string The string to check
+ */
+const _endsWithOperator = (string) => {
+    const lastIndex = string.length - 1;
+    return isOperator(string[lastIndex]);
+};
+
+/**
+ * Deletes a single character from the current calculator string
+ * @param {string} entry The string containing the current calculator string
+ */
+const deleteEntry = (entry) => {
     let updatedEntry = entry;
 
     if (updatedEntry.length === 0) {
@@ -109,59 +157,93 @@ const deleteEntry = (entry, output) => {
 
     // deleting results in empty output case
     if (updatedEntry.length === 0) {
-        output.text('0');
+        updatedEntry = '0';
         return updatedEntry;
     }
 
-    // display output
-    output.text(updatedEntry);
+    // fixes cases where the entry may end up being a single operator
+    // (such as if '-5' gets deleted and results in '-')
+    if (isOperator(updatedEntry)) {
+        updatedEntry = '0';
+        return updatedEntry;
+    }
 
     return updatedEntry;
 };
 
-const addOperator = (entry, buttonText, output) => {
+/**
+ * Adds the desired operator to the current calcualtor string
+ * @param {string} entry The string containing the current calculator string
+ * @param {string} operator The string representation of the operator requested
+ */
+const addOperator = (entry, operator) => {
     let updatedEntry = entry;
 
-    updatedEntry += buttonText;
-    output.text(updatedEntry);
+    // if there already is an operator, we don't want to add another one right
+    // next to it
+    if (_endsWithOperator(updatedEntry)) {
+        return updatedEntry;
+    }
+
+    updatedEntry += operator;
 
     return updatedEntry;
 };
 
-const addDecimal = (entry, output) => {
+/**
+ * Adds a decimal to the current calculator string
+ * @param {string} entry The string containing the current calculator string
+ */
+const addDecimal = (entry) => {
     let updatedEntry = entry;
 
     const tempSplit = entry.split(/[+-÷×]/);
     if (!tempSplit[tempSplit.length - 1].includes('.')) {
         updatedEntry += '.';
     }
-    output.text(updatedEntry);
 
     return updatedEntry;
 };
 
-const addNumber = (entry, buttonText, output) => {
+/**
+ * Adds a number to the current calculator string
+ * @param {string} entry The string containing the current calculator string
+ * @param {string} number The number to be added to the current calculator string
+ */
+const addNumber = (entry, number) => {
     let updatedEntry = entry;
 
-    updatedEntry += buttonText;
-    output.text(updatedEntry);
+    if (entry === '0') {
+        updatedEntry = number;
+    } else {
+        updatedEntry += number;
+    }
 
     return updatedEntry;
 };
 
-const calculateResult = (entry, output) => {
+/**
+ * Calculates the result from the current calculator string
+ * @param {string} entry The string containing the current calculator string
+ */
+const calculateResult = (entry) => {
     let updatedEntry = entry;
+
+    // if the last character is an operator, we don't want to calculate the result
+    // as it is not a valid input
+    if (_endsWithOperator(updatedEntry)) {
+        return updatedEntry;
+    }
 
     const result = _parseExpression(updatedEntry);
 
     updatedEntry = `${result}`;
-    output.text(updatedEntry);
 
     return updatedEntry;
 };
 
 $(document).ready(() => {
-    let entry = '';
+    let entry = '0';
 
     const $output = $('.output');
 
@@ -189,22 +271,19 @@ $(document).ready(() => {
         if (!$(event.currentTarget).hasClass('empty')) {
             const buttonText = $(event.currentTarget).text();
 
-            if (
-                buttonText === '÷' ||
-                buttonText === '×' ||
-                buttonText === '-' ||
-                buttonText === '+'
-            ) {
-                entry = addOperator(entry, buttonText, $output);
+            if (isOperator(buttonText)) {
+                entry = addOperator(entry, buttonText);
             } else if (buttonText === '.') {
-                entry = addDecimal(entry, $output);
+                entry = addDecimal(entry);
             } else if (buttonText === 'DEL') {
-                entry = deleteEntry(entry, $output);
+                entry = deleteEntry(entry);
             } else if (buttonText === '=') {
-                entry = calculateResult(entry, $output);
+                entry = calculateResult(entry);
             } else {
-                entry = addNumber(entry, buttonText, $output);
+                entry = addNumber(entry, buttonText);
             }
+
+            $output.text(entry);
         }
     });
 });
