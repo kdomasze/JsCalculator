@@ -60,6 +60,28 @@ const _handleOperator = (operator, num, result) => {
 };
 
 /**
+ * evaluates an expression containing only multiplication or division operators
+ * @param {string} expression expression containing only multiplication or division operators
+ */
+const _evaluateMultiplicationAndDivision = (expression) => {
+    const expressionList = expression.split(/(×|÷)/g);
+
+    let tempResult = expressionList[0];
+    let operator = '';
+
+    for (let i = 1; i < expressionList.length; i++) {
+        if (expressionList[i] === '×' || expressionList[i] === '÷') {
+            operator = expressionList[i];
+            continue;
+        }
+
+        tempResult = _handleOperator(operator, expressionList[i], tempResult);
+    }
+
+    return tempResult;
+};
+
+/**
  * Calculates all the multiplication and division expression and return
  * an array of numbers and operators (bound to '+' and '-')
  * @param {Array<string>} higherOrderExpression The output of _seperateOutHighOrderOperations
@@ -73,23 +95,9 @@ const _calculateLowerOrderExpression = (higherOrderExpression) => {
         if (higherOrderExpression[i].includes('+') || higherOrderExpression[i].includes('-')) {
             lowerOrderExpression.push(higherOrderExpression[i]);
         } else {
-            let operator = '';
+            const output = _evaluateMultiplicationAndDivision(higherOrderExpression[i]);
 
-            // figure out if we are multiplying or dividing
-            if (higherOrderExpression[i].includes('×')) {
-                operator = '×';
-            } else {
-                operator = '÷';
-            }
-
-            const splitOperation = higherOrderExpression[i].split(operator);
-            let tempResult = splitOperation[0];
-            // loop through each number in the current operation and ensure they are all
-            // multiplied or divided together
-            for (let j = 1; j < splitOperation.length; j++) {
-                tempResult = _handleOperator(operator, splitOperation[j], tempResult);
-            }
-            lowerOrderExpression.push(`${tempResult}`);
+            lowerOrderExpression.push(`${output}`);
         }
     }
 
